@@ -61,7 +61,7 @@ class App extends Component {
         ...this.state.notes,
         newNote
       ]
-    }, this.componentDidMount())
+    })
   }
 
   renderNavRoutes() {
@@ -76,8 +76,8 @@ class App extends Component {
           />
         ))}
         <Route path="/note/:noteId" component={NotePageNav} />
-        <Route path="/add-folder" component={NotePageNav} />
-        <Route path="/add-note" component={NotePageNav} />
+        <Route path="/add-folder" component={AddFolder} />
+        <Route path="/add-note" component={AddNote} />
       </>
     );
   }
@@ -94,8 +94,6 @@ class App extends Component {
           />
         ))}
         <Route path="/note/:noteId" component={NotePageMain} />
-        <Route path='/add-folder' component={AddFolder} />
-        <Route path='/add-note' component={AddNote} />
       </>
     );
   }
@@ -110,20 +108,22 @@ class App extends Component {
     };
 
     return (
-      <ApiContext.Provider value={value}>
-        <div className="App">
-          <nav className="App__nav">{this.renderNavRoutes()}</nav>
-          <header className="App__header">
-            <h1>
-              <Link to="/">Noteful</Link>{' '}
-              <FontAwesomeIcon icon="check-double" />
-            </h1>
-          </header>
-          <ErrorPage>
-            <main className="App__main">{this.renderMainRoutes()}</main>
-          </ErrorPage>
-        </div>
-      </ApiContext.Provider>
+      <ErrorPage>
+        <ApiContext.Provider value={value}>
+          <div className="App">
+            <nav className="App__nav">{this.renderNavRoutes()}</nav>
+            <header className="App__header">
+              <h1>
+                <Link to="/">Noteful</Link>{' '}
+                <FontAwesomeIcon icon="check-double" />
+              </h1>
+            </header>
+            <ErrorPage>
+              <main className="App__main">{this.renderMainRoutes()}</main>
+            </ErrorPage>
+          </div>
+        </ApiContext.Provider>
+      </ErrorPage>
     );
   }
 }

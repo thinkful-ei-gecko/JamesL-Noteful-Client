@@ -38,12 +38,12 @@ export default class Note extends React.Component {
   }
 
   render() {
-    const { name, id, modified } = this.props
+    const { title, id, date_modified } = this.props
     return (
       <div className='Note'>
         <h2 className='Note__title'>
           <Link to={`/note/${id}`}>
-            {name}
+            {title}
           </Link>
         </h2>
         <button
@@ -60,7 +60,7 @@ export default class Note extends React.Component {
             Modified
             {' '}
             <span className='Date'>
-              {format(modified, 'Do MMM YYYY')}
+              {format(date_modified, 'Do MMM YYYY')}
             </span>
           </div>
         </div>
@@ -70,5 +70,6 @@ export default class Note extends React.Component {
 }
 
 Note.propTypes = {
-  onDeleteNote: PropTypes.func.isRequired
+  date_modified: PropTypes.string,
+  name: PropTypes.string
 }

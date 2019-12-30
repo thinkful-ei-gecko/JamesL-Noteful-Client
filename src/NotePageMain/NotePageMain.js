@@ -2,8 +2,7 @@ import React from 'react'
 import Note from '../Note/Note'
 import ApiContext from '../ApiContext'
 import { findNote } from '../notes-helpers'
-import './NotePageMain.css'
-import PropTypes from 'prop-types';
+import './NotePageMain.css';
 
 export default class NotePageMain extends React.Component {
   static defaultProps = {
@@ -25,21 +24,16 @@ export default class NotePageMain extends React.Component {
       <section className='NotePageMain'>
         <Note
           id={note.id}
-          name={note.note_name}
-          modified={Date(note.date_modified).toString()}
+          title={note.title}
+          date_modified={note.date_modified}
           onDeleteNote={this.handleDeleteNote}
         />
         <div className='NotePageMain__content'>
-          {note.note_content.split(/\n \r|\n/).map((para, i) =>
+          {note.content.split(/\n \r|\n/).map((para, i) =>
             <p key={i}>{para}</p>
           )}
         </div>
       </section>
     )
   }
-}
-
-NotePageMain.propTypes = {
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
 }

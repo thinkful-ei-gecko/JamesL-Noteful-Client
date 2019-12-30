@@ -19,8 +19,8 @@ export default class NoteListMain extends React.Component {
   render() {
     const { folderId } = this.props.match.params
     const { notes=[] } = this.context
-    const notesForFolder = getNotesForFolder(notes, folderId)
-    console.log(notesForFolder);
+    const notesForFolder = getNotesForFolder(notes, parseInt(folderId))
+    
     return (
       <section className='NoteListMain'>
         <ul>
@@ -28,8 +28,8 @@ export default class NoteListMain extends React.Component {
             <li key={note.id}>
               <Note
                 id={note.id}
-                name={note.note_name}
-                modified={Date(note.date_modified).toString()}
+                title={note.title}
+                date_modified={note.date_modified}
               />
             </li>
           )}
@@ -51,6 +51,3 @@ export default class NoteListMain extends React.Component {
   }
 }
 
-NoteListMain.propTypes = {
-  match: PropTypes.object.isRequired
-}

@@ -8,11 +8,10 @@ export default function NotefulForm(props) {
     <form
       className={['Noteful-form', className].join(' ')}
       action='#'
-      {...otherProps}
+      {...otherProps} />
   )
 }
 
 NotefulForm.propTypes = {
-  classname: PropTypes.string.isRequired,
-  otherProps: PropTypes.object.isRequired
+  classname: PropTypes.string
 }

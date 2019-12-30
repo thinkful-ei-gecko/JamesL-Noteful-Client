@@ -1,28 +1,23 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 export default class ErrorPage extends Component {
-  state = {
-    error: null
-  };
+    constructor(props) {
+        super(props);
+        this.state = {
+          hasError: false
+        };
+      }
 
   // Static method
   static getDerivedStateFromError(error) {
-      return {error};
+      return {hasError: true};
   }
   render() {
-      if (this.state.error) {
+      if (this.state.hasError) {
           return (
-              <main className="error-page">
-                  <h1>Something seems to have gone wrong</h1>
-                  <p>Try refreshing the page</p>
-              </main>
+              <h2>Sorry! Something went wrong.</h2>
           );
       }
       return this.props.children;
   }
 }
-
-ErrorPage.propTypes = {
-    children: PropTypes.object.isRequired
-  }

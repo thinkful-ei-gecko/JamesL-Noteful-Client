@@ -1,128 +1,155 @@
 import React, { Component } from 'react';
 import config from './config';
 import ApiContext from './ApiContext';
+import ValidationError from './ValidationError';
 import PropTypes from 'prop-types'
 
 export default class AddNote extends Component {
-
-  state = {
-    name: '',
-    content: '',
-    folderId: '',
-    modified: ''
-  }
+  constructor(props) {
+    super(props)
+      this.state = {
+        name: {
+          value: '',
+          touched: false
+        },
+        folderId: {
+          value: '',
+          touched: false
+        },
+        content: {
+          value: '',
+          touched: false
+      }
+    }
+  } 
 
   static contextType = ApiContext;
 
   handleAddNote = (e) => {
     e.preventDefault();
 
-    const newNote = {
-      note_name: this.state.name,
-      date_modified: this.state.modified,
-      note_content: this.state.content,
-      folder_id: this.state.folderId
-    };
+    const newNote = JSON.stringify({
+      title: this.state.name.value,
+      folder_id: this.state.folderId.value,
+      content: this.state.content.value,
+    })
 
     fetch(`${config.API_ENDPOINT}/notes`, {
       method: "POST",
       headers: {
         "content-type": "application/json"
       },
-      body: JSON.stringify(newNote)
+      body: newNote
     })
       .then(res => {
-        if (!res.ok) return res.json().then(e => Promise.reject(e));
+        if (!res.ok) return res.json().then(e => Promise.reject(e))
+        return res.json()
       })
-      .then(() => {
-        this.context.addNote(newNote);
-        this.props.history.push('/');
-      })
+      .then(response => this.context.addNote(response))
+      .then(
+        this.props.history.push('/')
+      )
       .catch(error => {
-        alert({ error });
+        alert( error.message );
       });
   };
 
-  getNoteName = (e) => {
-    this.setState({ name: e.target.value });
+  getNoteName = (name) => {
+    this.setState({ 
+      name: {
+        value: name,
+        touched: true
+      }
+    })
   }
 
-  getNoteContent = (e) => {
-    this.setState({ content: e.target.value });
+  getNoteContent = (content) => {
+    this.setState({ 
+      content: {
+        value: content,
+        touched: true
+      }
+    })
   }
 
-  getNoteModified = (e) => {
-    this.setState({ modified: new Date().toLocaleString() });
-  }
-
-  getNoteFolderId = (e) => {
-    this.setState({ folderId: e.target.value });
+  getNoteFolderId = (folderId) => {
+    this.setState({ 
+      folderId: {
+        value: folderId,
+        touched: true
+      }
+    })
   }
 
   validateNoteName = () => {
-    let note = this.state.name;
+    let name = this.state.name.value.trim();
 
-    if (!note) {
+    if (name.length === 0) {
       return 'Note name is required'
-    } else {
-      return null
     }
   }
 
   validateContent = () => {
-    let note = this.state.content;
+    let note = this.state.content.value.trim();
 
     if (!note) {
       return 'Note content is required'
-    } else {
-      return null
     }
   }
 
   validateFolder = () => {
-    let folder = this.state.folderId;
-
-    if (!folder) {
-      return 'Note content is required'
-    } else {
-      return null
-    }
+    const folder = this.state.folderId.value;
+    return !folder
   }
 
   render() {
-    const { folders } = this.context;
+    const folderList = this.context.folders.map(folder => {
 
     return (
-      <form className='addNoteOrFolder' onSubmit={e => this.handleAddNote(e)}>
-        <div>
-          <label htmlFor='noteName'>New Note Name: </label>
-          <input type='text' id='noteName' value={this.state.name} onChange={ this.getNoteName } />
-          {this.validateNoteName && <p className='validationElement'>{this.validateNoteName()}</p>}
-        </div>
-        <div>
-          <label htmlFor='noteContent'>Content: </label>
-          <input type='text' id='noteName' value={this.state.content} onChange={ this.getNoteContent } />
-          {this.validateContent && <p className='validationElement'>{this.validateContent()}</p>}
-        </div>
-        <div>
-          <select name='Choose folder...' value={this.state.folderId} onChange={ this.getNoteFolderId }>
-            <option key="default" value={null}>Select folder</option>
-            {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.folder_name}</option>)}
+      <option key= {folder.id} value={folder.id}>{folder.folder_name}</option>
+      )
+    })
+
+     
+		return (
+			<form onSubmit={this.handleAddNote}>
+					<label htmlFor="note-name">Title *</label>
+					<input 
+						id="note-name" 
+						type="text" 
+						name="note-name"
+						onChange={e => this.getNoteName(e.target.value)}
+					>
+					</input>
+					{this.state.name.touched && (<ValidationError message = {this.validateNoteName()}/>)}
+          <label htmlFor="content">Content</label>
+					<textarea id="content" 
+						name="content" 
+						onChange={e => this.getNoteContent(e.target.value)}
+					></textarea>
+					<label htmlFor="folders">Save in *</label>
+					<select 
+					  id="folders"
+					  name="folders"
+						onChange={e => this.getNoteFolderId(e.target.value)}
+						defaultValue="Select Folder"
+					>
+					<option disabled>Select Folder</option>
+            {folderList}
           </select>
-          {this.validateFolder && <p className='validationElement'>{this.validateFolder()}</p>}
-        </div>
-        <div>
-          <button disabled={this.validateNoteName() || this.validateContent() || this.validateFolder()} 
-                  type='submit' 
-                  onClick={ this.getNoteModified }>
-                    Submit
-          </button>
-        </div>
-      </form>
-    );
-  }
+					<button type="submit"
+					disabled = {this.validateNoteName()||this.validateFolder()
+				}
+					>Save</button>
+			</form>
+		)
+	}
 }
 
 AddNote.propTypes = {
-  history: PropTypes.object.isRequired
+	folders: PropTypes.arrayOf(PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+	})),
+	addNote: PropTypes.func
 }
