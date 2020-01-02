@@ -118,9 +118,7 @@ class App extends Component {
                 <FontAwesomeIcon icon="check-double" />
               </h1>
             </header>
-            <ErrorPage>
               <main className="App__main">{this.renderMainRoutes()}</main>
-            </ErrorPage>
           </div>
         </ApiContext.Provider>
       </ErrorPage>
